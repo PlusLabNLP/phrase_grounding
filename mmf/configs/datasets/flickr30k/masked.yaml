@@ -1,0 +1,45 @@
+dataset_config:
+  masked_flickr30k:
+    data_dir: ${env.data_dir}/datasets
+    depth_first: false
+    fast_read: false
+    use_images: false
+    use_features: true
+    features:
+      train:
+      - /nas/multi-modal/ziyidou/flickr_imdb/flickr30k_images_vmb_noback_0.1.lmdb
+      val:
+      - /nas/multi-modal/ziyidou/flickr_imdb/flickr30k_images_vmb_noback_0.1.lmdb
+      test:
+      - /nas/multi-modal/ziyidou/flickr_imdb/flickr30k_images_vmb_noback_0.1.lmdb
+    annotations:
+      train:
+      - /nas/multi-modal/ziyidou/flickr30k_entities/flickr_sent_train.jsonl
+      val:
+      - /nas/multi-modal/ziyidou/mmf_data/datasets/flickr30k/sent_test0.jsonl
+      test:
+      - /nas/multi-modal/ziyidou/mmf_data/datasets/flickr30k/sent_test0.jsonl
+    max_features: 100
+    max_region_num: 100
+    return_features_info: true
+    processors:
+      masked_token_processor:
+        type: masked_token
+        params:
+          tokenizer_config:
+            type: bert-base-uncased
+            params:
+              do_lower_case: true
+          mask_probability: 0.15
+          max_seq_length: 30
+      transformer_bbox_processor:
+        type: transformer_bbox
+        params:
+          bbox_key: boxes
+          image_width_key: image_w
+          image_height_key: image_h
+      masked_region_processor:
+        type: masked_region
+        params:
+          mask_probability: 0.15
+          mask_region_probability: 0.00

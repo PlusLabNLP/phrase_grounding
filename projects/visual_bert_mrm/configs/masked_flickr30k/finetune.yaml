@@ -1,0 +1,73 @@
+dataset_config:
+  masked_flickr30k:
+    annotations:
+      train:
+      - /nas/multi-modal/ziyidou/flickr30k_entities/flickr_sent_test.jsonl
+      val:
+      - /nas/multi-modal/ziyidou/flickr30k_entities/flickr_sent_train.jsonl
+      test:
+      - /nas/multi-modal/ziyidou/flickr30k_entities/flickr_sent_test.jsonl
+    features:
+      train:
+      - /nas/multi-modal/ziyidou/flickr_imdb/flickr30k_images_vmb_noback_0.1.lmdb
+      val:
+      - /nas/multi-modal/ziyidou/flickr_imdb/flickr30k_images_vmb_noback_0.1.lmdb
+      test:
+      - /nas/multi-modal/ziyidou/flickr_imdb/flickr30k_images_gt.lmdb
+    use_image_feature_masks: true
+    return_features_info: true
+    max_features: 64
+    max_region_num: 64
+    return_features_info: true
+    processors:
+      masked_token_processor:
+        type: masked_token
+        params:
+          tokenizer_config:
+            type: bert-base-uncased
+            params:
+              do_lower_case: true
+          mask_probability: 0.15
+          max_seq_length: 40
+      transformer_bbox_processor:
+        type: transformer_bbox
+        params:
+          bbox_key: bbox
+          image_width_key: image_width
+          image_height_key: image_height
+      masked_region_processor:
+        type: masked_region
+        params:
+          mask_probability: 0.15
+          mask_region_probability: 0.9
+
+optimizer:
+  type: adam_w
+  params:
+    lr: 5e-5
+    eps: 1e-8
+
+scheduler:
+  type: warmup_linear
+  params:
+    num_warmup_steps: 1000
+    num_training_steps: 11000
+
+training:
+  batch_size: 96
+  update_frequency: 1
+  find_unused_parameters: true
+  lr_scheduler: true
+  # Don't forget to update schedule_attributes if you update this
+  max_updates: 11000
+
+checkpoint:
+  resume_pretrained: true
+  pretrained_state_mapping:
+    model.bert: model.bert
+    classifier: classifier
+    model.cls: model.cls
+    model.cls_vis1: model.cls_vis1
+    model.cls_vis2: model.cls_vis2
+    model.input_vis: model.input_vis
+

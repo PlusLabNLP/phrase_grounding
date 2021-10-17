@@ -1,0 +1,24 @@
+dataset_config:
+  masked_flickr30k:
+    use_image_feature_masks: true
+    return_features_info: true
+
+optimizer:
+  type: adam_w
+  params:
+    lr: 5e-5
+    eps: 1e-8
+
+scheduler:
+  type: warmup_linear
+  params:
+    num_warmup_steps: 1000
+    num_training_steps: 11000
+
+training:
+  batch_size: 30
+  update_frequency: 16
+  find_unused_parameters: true
+  lr_scheduler: true
+  # Don't forget to update schedule_attributes if you update this
+  max_updates: 11000

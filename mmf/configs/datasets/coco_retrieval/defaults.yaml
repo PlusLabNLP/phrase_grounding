@@ -1,0 +1,42 @@
+dataset_config:
+  coco_retrieval:
+    data_dir: ${env.data_dir}/datasets
+    depth_first: false
+    fast_read: false
+    use_images: false
+    use_features: true
+    num_final_outputs: 4
+    features:
+      train:
+      - /nas/home/ziyidou/mmf_data/datasets/coco/features_100/COCO_trainval_resnext152_faster_rcnn_genome.lmdb
+      val:
+      - /nas/home/ziyidou/mmf_data/datasets/coco/features_100/COCO_trainval_resnext152_faster_rcnn_genome.lmdb
+      test:
+      - /nas/home/ziyidou/mmf_data/datasets/coco/features_100/COCO_trainval_resnext152_faster_rcnn_genome.lmdb
+    annotations:
+      train:
+      - /nas/home/ziyidou/mmf_data/datasets/cocoRetreival/all_data_final_train_2014.jsonline
+      val:
+      - /nas/home/ziyidou/mmf_data/datasets/cocoRetreival/all_data_final_val.jsonline
+      test:
+      - /nas/home/ziyidou/mmf_data/datasets/cocoRetreival/all_data_final_test.jsonline
+    max_features: 100
+    test_id_file_path: /nas/home/ziyidou/mmf_data/datasets/cocoRetreival/cache/coco_test_ids.npy
+    hard_neg_file_path: /nas/home/ziyidou/mmf_data/datasets/cocoRetreival/hard_negative_cleaned.pkl
+    return_features_info: true
+    processors:
+      text_processor:
+        type: bert_tokenizer
+        params:
+          tokenizer_config:
+            type: bert-base-uncased
+            params:
+              do_lower_case: true
+          mask_probability: 0
+          max_seq_length: 30
+      transformer_bbox_processor:
+        type: transformer_bbox
+        params:
+          bbox_key: bbox
+          image_width_key: image_width
+          image_height_key: image_height

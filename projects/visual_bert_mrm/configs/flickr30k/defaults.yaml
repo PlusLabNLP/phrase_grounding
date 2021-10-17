@@ -1,0 +1,77 @@
+model_config:
+  visual_bert_mrm:
+    training_head_type: flickr30k
+    num_labels: 1
+    finetune_lr_multiplier: 1
+    losses:
+    - type: bce
+
+optimizer:
+  type: adam_w
+  params:
+    lr: 1e-5
+    eps: 1e-8
+
+scheduler:
+  type: warmup_linear
+  params:
+    num_warmup_steps: 1000
+    num_training_steps: ${training.max_updates}
+
+evaluation:
+  metrics:
+  - refcoco_accuracy
+
+dataset_config:
+  flickr30k:
+    return_features_info: true
+    max_features: 150
+    max_region_num: 150
+    processors:
+      text_processor:
+        type: bert_tokenizer
+        params:
+          tokenizer_config:
+            type: bert-base-uncased
+            params:
+              do_lower_case: true
+          mask_probability: 0
+          max_seq_length: 100
+      transformer_bbox_processor:
+        type: transformer_bbox
+        params:
+          bbox_key: boxes
+          image_width_key: image_w
+          image_height_key: image_h
+    annotations:
+      train:
+      - /nas/multi-modal/ziyidou/flickr30k_entities/flickr_sent_phrase_train_nounion.jsonl
+      val:
+      - /nas/multi-modal/ziyidou/flickr30k_entities/flickr_sent_phrase_test_nounion.jsonl
+      test:
+      - /nas/home/ziyidou/mmf_data/datasets/flickr30k/test.jsonl
+    features:
+      train:
+      - /nas/multi-modal/ziyidou/flickr_imdb/flickr30k_images_gt.lmdb,/nas/multi-modal/ziyidou/flickr_imdb/flickr30k_images_vmb_noback_0.1.lmdb,/nas/multi-modal/ziyidou/flickr_imdb/flickr30k_images_vmb_noback_0.1.lmdb
+      val:
+      - /nas/multi-modal/ziyidou/flickr_imdb/flickr30k_images_gt.lmdb,/nas/multi-modal/ziyidou/flickr_imdb/flickr30k_images_vmb_noback_0.1.lmdb,/nas/multi-modal/ziyidou/flickr_imdb/flickr30k_images_vmb_noback_0.1.lmdb
+      test:
+      - /nas/multi-modal/ziyidou/mmf_data/datasets/flickr30k/flickr30k_gt_resnext152_faster_rcnn_genome.lmdb,/nas/multi-modal/ziyidou/flickr_imdb/flickr30k_images_vmb_noback_0.1.lmdb,/nas/multi-modal/ziyidou/flickr_imdb/flickr30k_images_vmb_noback_0.1.lmdb
+
+training:
+  seed: 42
+  batch_size: 32
+  update_frequency: 2
+  lr_scheduler: false
+  max_updates: 100000
+  find_unused_parameters: true
+  evaluation_interval: 100
+  evaluate_metrics: true
+
+checkpoint:
+  resume_pretrained: true
+  pretrained_state_mapping:
+    model.bert: model.bert
+    classifier: classifier
+    model.input_vis: model.input_vis
+

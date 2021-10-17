@@ -1,0 +1,36 @@
+dataset_config:
+  masked_coco:
+    use_image_feature_masks: true
+    return_features_info: true
+    processors:
+      transformer_bbox_processor:
+        type: transformer_bbox
+        params:
+          bbox_key: bbox
+          image_width_key: image_width
+          image_height_key: image_height
+      masked_region_processor:
+        type: masked_region
+        params:
+          mask_probability: 0.15
+          mask_region_probability: 0.90
+
+optimizer:
+  type: adam_w
+  params:
+    lr: 5e-5
+    eps: 1e-8
+
+scheduler:
+  type: warmup_linear
+  params:
+    num_warmup_steps: 1000
+    num_training_steps: 11000
+
+training:
+  batch_size: 32
+  update_frequency: 15
+  find_unused_parameters: true
+  lr_scheduler: true
+  # Don't forget to update schedule_attributes if you update this
+  max_updates: 11000

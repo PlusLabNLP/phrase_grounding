@@ -1,0 +1,83 @@
+model_config:
+  visual_bert_mrm:
+    training_head_type: refcoco
+    num_labels: 1
+    num_multiple_choices: 4
+    finetune_lr_multiplier: 1
+    losses:
+    - type: bce
+
+optimizer:
+  type: adam_w
+  params:
+    lr: 5e-5
+    eps: 1e-8
+
+scheduler:
+  type: warmup_linear
+  params:
+    num_warmup_steps: 10000
+    num_training_steps: ${training.max_updates}
+
+evaluation:
+  metrics:
+  - refcoco_accuracy
+
+dataset_config:
+  refcoco:
+    return_features_info: true
+    data_dir: ${env.data_dir}/datasets
+    depth_first: false
+    fast_read: false
+    use_images: false
+    use_features: true
+    features:
+      train:
+      - /nas/multi-modal/ziyidou/mmf_data/datasets/refcoco/refcoco+_unc/refcoco+_101box_152feat.lmdb
+      val:
+      - /nas/multi-modal/ziyidou/mmf_data/datasets/refcoco/refcoco+_unc/refcoco+_101box_152feat.lmdb
+      test:
+      - /nas/home/ziyidou/mmf_data/datasets/refcoco/refcoco+_unc/refcoco+_resnext152_faster_rcnn_genome.lmdb,/nas/home/ziyidou/mmf_data/datasets/refcoco/refcoco+_unc/refcoco+_gt_resnext152_faster_rcnn_genome.lmdb
+    annotations:
+      train:
+      - /nas/home/ziyidou/refer/refcoco+.train.jsonl
+      val:
+      - /nas/home/ziyidou/refer/refcoco+.testA.jsonl
+      test:
+      - /nas/home/ziyidou/refer/refcoco+.test.jsonl
+    max_features: 32
+    max_region_num: 32
+    return_features_info: true
+    processors:
+      text_processor:
+        type: bert_tokenizer
+        params:
+          tokenizer_config:
+            type: bert-base-uncased
+            params:
+              do_lower_case: true
+          mask_probability: 0
+          max_seq_length: 30
+      transformer_bbox_processor:
+        type: transformer_bbox
+        params:
+          bbox_key: boxes
+          image_width_key: image_w
+          image_height_key: image_h
+
+training:
+  seed: 42
+  batch_size: 32
+  update_frequency: 1
+  lr_scheduler: true
+  max_updates: 100000
+  find_unused_parameters: true
+  evaluation_interval: 100
+  evaluate_metrics: true
+
+checkpoint:
+  resume_pretrained: true
+  pretrained_state_mapping:
+    model.bert: model.bert
+    classifier: classifier
+

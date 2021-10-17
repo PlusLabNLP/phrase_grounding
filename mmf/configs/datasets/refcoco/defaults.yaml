@@ -1,0 +1,40 @@
+dataset_config:
+  refcoco:
+    data_dir: ${env.data_dir}/datasets
+    depth_first: false
+    fast_read: false
+    use_images: false
+    use_features: true
+    features:
+      train:
+      - /nas/home/ziyidou/mmf_data/datasets/refcoco/refcoco_unc/refcoco_resnext152_faster_rcnn_genome.lmdb,/nas/home/ziyidou/mmf_data/datasets/refcoco/refcoco_unc/refcoco_gt_resnext152_faster_rcnn_genome.lmdb
+      val:
+      - /nas/home/ziyidou/mmf_data/datasets/refcoco/refcoco_unc/refcoco_resnext152_faster_rcnn_genome.lmdb,/nas/home/ziyidou/mmf_data/datasets/refcoco/refcoco_unc/refcoco_gt_resnext152_faster_rcnn_genome.lmdb
+      test:
+      - /nas/home/ziyidou/mmf_data/datasets/refcoco/refcoco_unc/refcoco_resnext152_faster_rcnn_genome.lmdb,/nas/home/ziyidou/mmf_data/datasets/refcoco/refcoco_unc/refcoco_gt_resnext152_faster_rcnn_genome.lmdb
+    annotations:
+      train:
+      - /nas/home/ziyidou/refer/refcoco.train.jsonl
+      val:
+      - /nas/home/ziyidou/refer/refcoco.val.jsonl
+      test:
+      - /nas/home/ziyidou/refer/refcoco.test.jsonl
+    max_features: 100
+    max_region_num: 200
+    return_features_info: true
+    processors:
+      text_processor:
+        type: bert_tokenizer
+        params:
+          tokenizer_config:
+            type: bert-base-uncased
+            params:
+              do_lower_case: true
+          mask_probability: 0
+          max_seq_length: 30
+      transformer_bbox_processor:
+        type: transformer_bbox
+        params:
+          bbox_key: boxes
+          image_width_key: image_w
+          image_height_key: image_h

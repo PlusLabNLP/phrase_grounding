@@ -1,0 +1,59 @@
+dataset_config:
+  coco:
+    data_dir: ${env.data_dir}/datasets
+    depth_first: false
+    fast_read: false
+    use_images: false
+    use_features: true
+    zoo_requirements:
+    - coco.defaults
+    # annotation_style can be coco or textcaps which allows us to override
+    # the dataset class
+    annotation_style: coco
+    images:
+      train:
+      - /nas/multi-modal/ziyidou/cache_datasets/coco/defaults/images/train2014
+      val:
+      - /nas/multi-modal/ziyidou/cache_datasets/coco/defaults/images/val2014
+      test:
+      - /nas/multi-modal/ziyidou/cache_datasets/coco/defaults/images/test2015
+    features:
+      train:
+      - /nas/multi-modal/ziyidou/cache_datasets/coco/defaults/features/trainval2014.lmdb
+      val:
+      - /nas/multi-modal/ziyidou/cache_datasets/coco/defaults/features/trainval2014.lmdb
+      test:
+      - /nas/multi-modal/ziyidou/cache_datasets/coco/defaults/features/trainval2014.lmdb
+    annotations:
+      train:
+      - /nas/multi-modal/ziyidou/cache_datasets/coco/defaults/annotations/imdb_karpathy_train.npy
+      val:
+      - /nas/multi-modal/ziyidou/cache_datasets/coco/defaults/annotations/imdb_karpathy_val.npy
+      test:
+      - /nas/multi-modal/ziyidou/cache_datasets/coco/defaults/annotations/imdb_karpathy_test.npy
+    max_features: 100
+    processors:
+      text_processor:
+        type: vocab
+        params:
+          max_length: 52
+          vocab:
+            type: intersected
+            embedding_name: glove.6B.300d
+            vocab_file: /nas/multi-modal/ziyidou/cache_datasets/coco/defaults/extras/vocabs/vocabulary_captioning_thresh5.txt
+          preprocessor:
+            type: simple_sentence
+            params: {}
+      caption_processor:
+        type: caption
+        params:
+          vocab:
+            type: intersected
+            embedding_name: glove.6B.300d
+            vocab_file: /nas/multi-modal/ziyidou/cache_datasets/coco/defaults/extras/vocabs/vocabulary_captioning_thresh5.txt
+    min_captions_per_img: 5
+    return_features_info: false
+    # Return OCR information
+    use_ocr: false
+    # Return spatial information of OCR tokens if present
+    use_ocr_info: false
